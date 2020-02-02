@@ -1,4 +1,4 @@
-# SPNet mode of "Mask R-CNN for Object Detection and Segmentation"
+# SPNet mod of "Mask R-CNN for Object Detection and Segmentation"
 
 *Modifying the original matterport/Mask_RCNN repo and made it so that instead of putting out class labels, it puts out floating point numbers*
 
