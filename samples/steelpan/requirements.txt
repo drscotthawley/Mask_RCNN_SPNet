@@ -1,0 +1,14 @@
+#python=3.4
+numpy
+scipy
+Pillow
+cython
+matplotlib
+scikit-image
+tensorflow-gpu==1.15.0
+keras==2.0.8
+opencv-python
+h5py
+pandas
+imgaug
+IPython[all]
