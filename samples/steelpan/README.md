@@ -32,13 +32,4 @@ Then run
 
     $ ./steelpan.py --weights imagenet --dataset ../../datasets/steelpan train
 
-...the observe the error:
-
-```
-Loading weights  ../../mask_rcnn_coco.h5
-Traceback (most recent call last):
-  File "/home/shawley/anaconda3/envs/keras/lib/python3.7/site-packages/tensorflow/python/framework/ops.py", line 1659, in _create_c_op
-    c_op = c_api.TF_FinishOperation(op_desc)
-tensorflow.python.framework.errors_impl.InvalidArgumentError: Dimension 1 in both shapes must be equal, but are 48 and 324. Shapes are [1024,48] and [1024,324]. for 'Assign_376' (op: 'Assign') with input shapes: [1024,48], [1024,324].
-
-```
+...more later
