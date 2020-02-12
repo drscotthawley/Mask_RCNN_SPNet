@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 """
 Mask R-CNN
 Train on the Steelpan Vibrations dataset and count the number of rings.
@@ -78,14 +79,14 @@ class SteelpanConfig(Config):
     # Give the configuration a recognizable name
     NAME = "steelpan"
 
-    # Train on 1 GPU and 8 images per GPU. We can put multiple images on each
+    # Train on _ GPU and _ images per GPU. We can put multiple images on each
     # GPU because the images are small. Batch size is 8 (GPUs * images/GPU).
     GPU_COUNT = 1
     IMAGES_PER_GPU = 4
 
     # Number of classes (including background)
-    #NUM_CLASSES = 1 + 11  # background + 11 ring-count classes
-    NUM_CLASSES = 1 + 1  # background + is there an antinode region
+    NUM_CLASSES = 1 + 11  # background + 11 ring-count classes
+    #NUM_CLASSES = 1 + 1  # background + is there an antinode region
 
     # Image size parameters
     IMAGE_MIN_DIM = 384
@@ -141,8 +142,8 @@ class SteelpanConfig(Config):
 
 class SteelpanInferenceConfig(SteelpanConfig):
     # Set batch size to 1 to run one image at a time
-    GPU_COUNT = 1
-    IMAGES_PER_GPU = 1
+    GPU_COUNT = 2
+    IMAGES_PER_GPU = 2
     # Don't resize images for inferencing
     IMAGE_RESIZE_MODE = "pad64"
     # Non-max suppression threshold to filter RPN proposals.
@@ -186,10 +187,10 @@ class SteelpanDataset(utils.Dataset):
         subset: Subset to load: train or val
         """
         # Add classes. We will use one class for every count of interference rings/fringes
-        #max_rings = 11
-        #for r in range(max_rings):
-        #   self.add_class("steelpan", r+1, str(r+1))
-        self.add_class("steelpan", 1, str(1))
+        max_rings = 11
+        for r in range(max_rings):
+           self.add_class("steelpan", r+1, str(r+1))
+        #self.add_class("steelpan", 1, str(1))
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
@@ -280,7 +281,8 @@ class SteelpanDataset(utils.Dataset):
                 [x, y, a, b, angle, rings ] = ellipse
                 x, y, a, b  = round(x), round(y), round(a), round(b)
                 angle = round(angle)
-                class_id = int(rings > 0.5)  # round(rings)
+                #class_id = int(rings > 0.5)   # for just "is there any antinode or not"?
+                class_id = round(rings)
                 color = 1
                 # draw filled ellipse of 1's
                 #  For some reason, drawing directly onto mask[:,:,i] wasn't working. Hence...
@@ -290,7 +292,7 @@ class SteelpanDataset(utils.Dataset):
                 class_ids.append(class_id)
 
             class_ids = np.array(class_ids).astype(np.int32)
-            #print("     class_ids = ",class_ids)
+            print("     class_ids = ",class_ids)
             # Return mask, and array of class IDs of each instance.
             return mask.astype(np.bool), class_ids
         else:
@@ -408,6 +410,7 @@ if __name__ == '__main__':
                         metavar="<command>",
                         help="'train' or 'splash'")
     parser.add_argument('--dataset', required=False,
+                        default="../../datasets/steelpan",
                         metavar="/path/to/steelpan/dataset/",
                         help='Directory of the steelpan dataset')
     parser.add_argument('--fraction', required=False, type=float,
@@ -415,6 +418,7 @@ if __name__ == '__main__':
                         help='Fraction of training dataset to load')
     parser.add_argument('--weights', required=True,
                         metavar="/path/to/weights.h5",
+                        default="imagenet",
                         help="Path to weights .h5 file or 'coco'")
     parser.add_argument('--logs', required=False,
                         default=DEFAULT_LOGS_DIR,
